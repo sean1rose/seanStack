@@ -64,5 +64,8 @@ node_modules/
 # dotenv environment variables file
 .env
 
-seanStack-d2bb59ed967c.json
-./seanStack-d2bb59ed967c.json
+# seanStack-d2bb59ed967c.json
+# ./seanStack-d2bb59ed967c.json
+# serviceAccount.json
+# ./serviceAccount.json
+key/

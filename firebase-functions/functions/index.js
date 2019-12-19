@@ -1,24 +1,20 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-const serviceAccount = require('../seanStack-d2bb59ed967c.json');
+// const serviceAccount = require('../serviceAccount.json');
+const serviceAccount = require('./key/serviceAccount.json')
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://seanstack-daf2a.firebaseio.com"
 });
 
+const express = require('express');
+const app = express();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-exports.helloWorld = functions.https.onRequest((request, response) => {
- response.send("Hello project 7000!");
-});
-
-exports.getLists = functions.https.onRequest((req, res) => {
-  // need access to db -> admin.firestore() === db
-  admin
+app.get('/lists', (req, res) => {
+    // for access to db -> admin.firestore() === db
+    admin
     .firestore()
     .collection('lists')
     .get()
@@ -30,7 +26,9 @@ exports.getLists = functions.https.onRequest((req, res) => {
       return res.json(lists);
     })
     .catch(err => console.log('err', err))
-});
+
+})
+
 
 exports.createList = functions.https.onRequest((req, res) => {
   if (req.method !== 'POST'){
@@ -55,3 +53,6 @@ exports.createList = functions.https.onRequest((req, res) => {
     })
 });
 
+// https://baseurl.com/api/
+
+exports.api = functions.https.onRequest(app);
