@@ -17,11 +17,18 @@ app.get('/lists', (req, res) => {
     admin
     .firestore()
     .collection('lists')
+    .orderBy('createdAt', 'desc')
     .get()
     .then((data) => {
       let lists = [];
       data.forEach((doc) => {
-        lists.push(doc.data());
+        lists.push({
+          listId: doc.id,
+          user: doc.data().user,
+          createdAt: doc.data().createdAt,
+          list: doc.data().list,
+          title: doc.data.title
+        });
       })
       return res.json(lists);
     })
@@ -29,15 +36,11 @@ app.get('/lists', (req, res) => {
 
 })
 
-
-exports.createList = functions.https.onRequest((req, res) => {
-  if (req.method !== 'POST'){
-    return res.status(400).json({error: 'Method not allowed: You tried method other than a POST on a POST route'})
-  }
+app.post('/list', (req, res) => {
   const newList = {
     title: req.body.title,
     user: req.body.user,
-    createdAt: admin.firestore.Timestamp.fromDate(new Date()),
+    createdAt: new Date().toISOString(),
     list: req.body.list
   };
   admin
@@ -50,7 +53,7 @@ exports.createList = functions.https.onRequest((req, res) => {
     .catch(err => {
       res.status(500).json({error: 'something amiss'});
       console.log('err', err)
-    })
+    });
 });
 
 // https://baseurl.com/api/
