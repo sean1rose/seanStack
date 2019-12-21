@@ -81,6 +81,45 @@ app.post('/list', (req, res) => {
   });
 });
 
+// ***validation helpers BEGIN***
+const isStringEmpty = str => {
+  if (str.trim() === '') {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+const isEmail = email => {
+  const emailRegEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (email.match(emailRegEx)) {
+    return true
+  } else {
+    return false
+  }
+}
+
+const doesAuthRequestPassValidation = authRequest => {
+  let errors = {};  
+  // validate each field to make sure newUser properties are all populated...
+  if (isStringEmpty(authRequest.email)) {
+    errors.email = 'Email field must be populated'
+  } else if (!isEmail(authRequest.email)) {
+    errors.email = 'Must be a valid email address'
+  }
+
+  if (isStringEmpty(authRequest.password)) errors.password = 'Password field must be populated'
+  if (authRequest.hasOwnProperty('confirmPassword') && authRequest.password !== authRequest.confirmPassword) errors.confirmPassword = 'Password fields must match'
+  if (authRequest.hasOwnProperty('username') && isStringEmpty(authRequest.username)) errors.username = 'Username field must be populated'
+
+  // errors obj must be empty in order to proceed (otherwise we have an error)
+  if (Object.keys(errors).length > 0) return {doesPass: false, errors}
+  else return {doesPass: true}
+}
+// ***validation helpers END***
+
+
 // *post signup route*
 app.post('/signup', (req, res) => {
   // when post signup route is hit -> start with newUser object...
@@ -90,6 +129,12 @@ app.post('/signup', (req, res) => {
     confirmPassword: req.body.confirmPassword,
     username: req.body.username,
   }
+
+  // ***VALIDATION***
+  const {doesPass, errors} = doesAuthRequestPassValidation(newUser)
+  // if does not pass validation -> return 400 error
+  if (!doesPass) return res.status(400).json(errors)
+
 
   let token, userId, userDocToCreate;
   // create a document in the the db-collection @ path `/users/${newUser.username}`...
@@ -147,5 +192,43 @@ app.post('/signup', (req, res) => {
     })
 
 });
+
+// LOGIN route
+app.post('/login', (req, res) => {
+  const user = {
+    email: req.body.email,
+    password: req.body.password
+  };
+
+  // ***VALIDATION***
+  const {doesPass, errors} = doesAuthRequestPassValidation(user)
+  // if does not pass validation -> return 400 error
+  if (!doesPass) return res.status(400).json(errors)
+
+
+  // use firebase API to login
+  firebase.auth().signInWithEmailAndPassword(user.email, user.password)  
+    .then(userCredential => {
+        // returns userCredential === (userCredential) ===> https://firebase.google.com/docs/reference/js/firebase.auth.html#usercredential
+        // userCredential.user ===> https://firebase.google.com/docs/reference/js/firebase.User.html
+        userId = userCredential.user.uid;
+        return userCredential.user.getIdToken(); // grab the token that firebase-auth creates upon successful authentication
+      })
+      .then(token => {
+        // note we are only returning the token (not the logged in user obj)
+        return res.json({token});
+      })
+      .catch(err => {
+        console.error(err);
+        if (err.code === 'auth/wrong-password') {
+          return res.status(403).json({ general: 'Incorrect password'});
+        }
+        else {
+          return res.status(500).json({ error: err.code });
+        }
+
+      })
+  
+})
 
 exports.api = functions.https.onRequest(app);
