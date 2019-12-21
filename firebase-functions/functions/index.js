@@ -55,13 +55,49 @@ app.get('/lists', (req, res) => {
     res.status(500).json({error: `Something amiss: ${err}`});
     console.log('err', err)
   })
-})
+});
+
+// middleware function
+const FBAuth = (req, res, next) => {
+  let idToken;
+  // if the headers on the request has an authorization value and that value starts w/ 'Bearer'
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    idToken = req.headers.authorization.split('Bearer ')[1];
+  }
+  else {
+    console.error('No token found');
+    return res.status(403).json({error: 'Unauthorized'});
+  }
+  // need to verify that we authorized this token...
+  admin.auth().verifyIdToken(idToken)
+    .then(decodedToken => {
+      // need to add this data to our request object
+      console.log('decodedToken -', decodedToken)
+      req.user = decodedToken;
+      // then get this specific user from the collection so can add his username to our request
+        // i guess we need more than just the token on each request...
+      return db.collection('users')
+        .where('userId', '==', req.user.uid)
+        .limit(1)
+        .get();
+    })
+    .then(data => {
+      // adding username to each request.user object
+      req.user.username = data.docs[0].data().username
+      return next();
+    })
+    .catch(err => {
+      // error handling
+      console.error('err:', err)
+      return res.status(500).json({error: `Error verifying token: ${err}`});
+    })
+}
 
 // *post list route*
-app.post('/list', (req, res) => {
+app.post('/list', FBAuth, (req, res) => {
   const newList = {
     title: req.body.title,
-    username: req.body.username,
+    username: req.user.username,
     createdAt: new Date().toISOString(),
     list: req.body.list
   };
@@ -72,7 +108,8 @@ app.post('/list', (req, res) => {
   .then(doc => {
     // @
     // upon successful doc-creation in lists collection -> return 1) status code + 2) json
-    res.status(200).json({ message: `document ${doc.id} created successfully`, list: doc })
+    // TODO: list should be a get() of the document (not the 'newList' created fromt the request)
+    res.status(200).json({ message: `document ${doc.id} created successfully`, list: newList })
   })
   .catch(err => {
     // error handling
