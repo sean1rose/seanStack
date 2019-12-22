@@ -29,6 +29,16 @@ let db = {
       body: 'I agree 100%',
       createdAt: '2019-12-21T09:49:26.162Z'
     }
+  ],
+  notifications: [
+    {
+      recipient: 'userH',
+      sender: 'userA',
+      read: 'true | false',
+      listId: 'arlj18t3c5yCeZDWgNgQ',
+      type: 'like | comment',
+      createdAt:'2019-12-21T09:50:26.162Z'
+    }
   ]
 }
 

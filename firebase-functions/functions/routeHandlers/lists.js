@@ -147,7 +147,7 @@ exports.likeList = (req, res) => {
       }
     })
     .then(likeDocData => {
-      console.log('likeDocData - ', likeDocData);
+      // console.log('likeDocData - ', likeDocData);
       if (likeDocData.empty) {
         // if like doc doesn't exist
         return db.collection('likes').add({
