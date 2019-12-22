@@ -1,6 +1,6 @@
 const app = require('express')(); // start up express server
 const functions = require('firebase-functions');
-const { getAllLists, createList , getList, commentOnList} = require('./routeHandlers/lists');
+const { getAllLists, createList , getList, commentOnList, likeList, unlikeList} = require('./routeHandlers/lists');
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser } = require('./routeHandlers/users');
 const { fbAuth } = require('./util/fbAuth')
 
@@ -18,9 +18,10 @@ app.get('/list/:listId', getList); // not protected -> want non-logged-in-users 
   delete list
   like list
   unlike list
-  comment on list
 */
 app.post('/list/:listId/comment', fbAuth, commentOnList)
+app.get('/list/:listId/like', fbAuth, likeList)
+app.get('/list/:listId/unlike', fbAuth, unlikeList)
 
 // *users routes (post signup and post login)*
 app.post('/signup', signup);

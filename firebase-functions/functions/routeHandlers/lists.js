@@ -31,8 +31,11 @@ exports.createList = (req, res) => {
   const newList = {
     title: req.body.title,
     username: req.user.username, // @2
+    userImage: req.user.imageUrl,
     createdAt: new Date().toISOString(),
-    list: req.body.list
+    list: req.body.list,
+    likeCount: 0,
+    commentCount: 0
   };
   // will add this list-document to the collection of lists
   db
@@ -42,7 +45,9 @@ exports.createList = (req, res) => {
     // @
     // upon successful doc-creation in lists collection -> return 1) status code + 2) json
     // TODO: list should be a get() of the document (not the 'newList' created fromt the request)
-    res.status(200).json({ message: `list document ${doc.id} created successfully`, list: newList })
+    const listResponse = newList;
+    listResponse.listId = doc.id;
+    res.status(200).json(listResponse);
   })
   .catch(err => {
     // error handling
@@ -114,3 +119,100 @@ exports.commentOnList = (req, res) => {
         });
     });
 };
+
+// like a list
+exports.likeList = (req, res) => {
+  const likeDocument = db.collection('likes').where('username', '==', req.user.username)
+    .where('listId', '==', req.params.listId).limit(1)
+
+  // %reference to the actual list-document -> this will be updated w/ the like count increment
+  const listDocument = db.doc(`/lists/${req.params.listId}`);
+
+  let listData; // for our tracking purposes and to send that data to FE (not the actual data from colleciton)
+  listDocument.get()
+    .then(listDoc => {
+      if (listDoc.exists) {
+        // 
+        listData = listDoc.data();
+        listData.listId = listDoc.id;
+        return likeDocument.get();
+      }
+      else {
+        return res.status(400).json({error: 'list not found'});
+      }
+    })
+    .then(likeDocData => {
+      console.log('likeDocData - ', likeDocData);
+      if (likeDocData.empty) {
+        // if like doc doesn't exist
+        return db.collection('likes').add({
+          listId: req.params.listId,
+          username: req.user.username
+        })
+        .then(() => {
+          // after successfully like -> increment count
+          console.log('like count before - ', listData.likeCount)
+          listData.likeCount++;
+          console.log('like count after - ', listData.likeCount)
+          // %need to actually update like count of the list-document in db-collection
+          return listDocument.update({likeCount: listData.likeCount});
+        })
+        .then(() => {
+          return res.json(listData); // return the list w/ updated count
+        })
+      }
+      else {
+        return res.status(400).json({ error: 'list already liked'});
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
+    })
+}
+
+exports.unlikeList = (req, res) => {
+  const likeDocument = db.collection('likes').where('username', '==', req.user.username)
+    .where('listId', '==', req.params.listId).limit(1)
+
+  // %reference to the actual list-document -> this will be updated w/ the like count increment
+  const listDocument = db.doc(`/lists/${req.params.listId}`);
+
+  let listData; // for our tracking purposes and to send that data to FE (not the actual data from colleciton)
+  listDocument.get()
+    .then(listDoc => {
+      if (listDoc.exists) {
+        // 
+        listData = listDoc.data();
+        listData.listId = listDoc.id;
+        return likeDocument.get();
+      }
+      else {
+        return res.status(400).json({error: 'list not found'});
+      }
+    })
+    .then(likeDocData => {
+      if (likeDocData.empty) {
+        // can't unlike a list that hasn't been liked yet...
+        console.error(err);
+        res.status(500).json({ error: err.code });
+      }
+      else {
+        // need to delete the like document first
+        return db
+          .doc(`/likes/${likeDocData.docs[0].id}`)
+          .delete()
+          .then(() => {
+            listData.likeCount--;
+            return listDocument.update({likeCount: listData.likeCount})
+          })
+          .then(() => {
+            return res.json(listData);
+          })
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
+    })  
+}
