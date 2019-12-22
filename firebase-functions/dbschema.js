@@ -21,6 +21,14 @@ let db = {
       likeCount: 5,
       commentCount: 2
     }
+  ],
+  comments: [
+    {
+      username: 'userH',
+      listId: 'arlj18t3c5yCeZDWgNgQ',
+      body: 'I agree 100%',
+      createdAt: '2019-12-21T09:49:26.162Z'
+    }
   ]
 }
 

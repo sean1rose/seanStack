@@ -154,7 +154,7 @@ exports.getAuthenticatedUser = (req, res) => {
       data.forEach(doc => {
         userData.likes.push(doc.data());
       });
-      return res.status(201).json({user: userData});
+      return res.status(201).json(userData);
     })
     .catch(err => {
       console.error(err);

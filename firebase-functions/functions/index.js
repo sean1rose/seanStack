@@ -1,6 +1,6 @@
 const app = require('express')(); // start up express server
 const functions = require('firebase-functions');
-const { getAllLists, createList } = require('./routeHandlers/lists');
+const { getAllLists, createList , getList, commentOnList} = require('./routeHandlers/lists');
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser } = require('./routeHandlers/users');
 const { fbAuth } = require('./util/fbAuth')
 
@@ -11,14 +11,22 @@ const { fbAuth } = require('./util/fbAuth')
 */
 
 // *lists routes (get and post)*
-app.get('/lists', getAllLists);
-app.post('/list', fbAuth, createList);
+app.get('/lists', getAllLists); // not protected -> want non-logged-in-users to be able to view lists
+app.post('/list', fbAuth, createList); // protected
+app.get('/list/:listId', getList); // not protected -> want non-logged-in-users to be able to view lists
+/* TODO: 
+  delete list
+  like list
+  unlike list
+  comment on list
+*/
+app.post('/list/:listId/comment', fbAuth, commentOnList)
 
 // *users routes (post signup and post login)*
 app.post('/signup', signup);
-app.post('/login', login)
-app.post('/user/image', fbAuth, uploadImage)
-app.post('/user', fbAuth, addUserDetails)
-app.get('/user', fbAuth, getAuthenticatedUser)
+app.post('/login', login);
+app.post('/user/image', fbAuth, uploadImage);
+app.post('/user', fbAuth, addUserDetails);
+app.get('/user', fbAuth, getAuthenticatedUser);
 
 exports.api = functions.https.onRequest(app);

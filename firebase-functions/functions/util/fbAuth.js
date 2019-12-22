@@ -2,6 +2,7 @@ const {admin, db} = require('./admin');
 
 // middleware function to protect routes (each request to route that uses this middleware will require the auth token)
 exports.fbAuth = (req, res, next) => {
+  console.log('fbAuth')
   let idToken;
   // if the headers on the request has an authorization value and that value starts w/ 'Bearer'
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -25,7 +26,8 @@ exports.fbAuth = (req, res, next) => {
     })
     .then(data => {
       // adding username to each request.user object (used at @2)
-      req.user.username = data.docs[0].data().username
+      req.user.username = data.docs[0].data().username;
+      req.user.imageUrl = data.docs[0].data().imageUrl;
       return next();
     })
     .catch(err => {
