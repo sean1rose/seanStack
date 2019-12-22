@@ -100,23 +100,28 @@ exports.commentOnList = (req, res) => {
   };
 
   // make sure list exists before adding comment (is this really necessary?)
-  db.doc(`/lists/${req.params.listId}`).get()
+  db.doc(`/lists/${req.params.listId}`)
+    .get()
     .then(listDoc => {
       if (!listDoc.exists) return res.status(404).json({ error: 'List not found'});
       
       // otherwise create comment add to comments doc
+      return listDoc.ref.update({commentCount: listDoc.data().commentCount + 1});
+    })
+    .then(() => {
       return db
         .collection('comments')
         .add(newComment)
-        .then(commentDoc => {
-          // upon successful doc-creation in lists collection -> return 1) status code + 2) json
-          console.log('comment before data ', commentDoc)
-          return res.status(201).json({ message: `comment document ${commentDoc.id} created successfully`, comment: newComment })
-        })
-        .catch(err => {
-          console.error(err);
-          res.status(500).json({ error: err.code });
-        });
+        
+    })
+    .then(commentDoc => {
+      // upon successful doc-creation in lists collection -> return 1) status code + 2) json
+      console.log('comment before data ', commentDoc)
+      return res.status(201).json({ message: `comment document ${commentDoc.id} created successfully`, comment: newComment })
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
     });
 };
 
@@ -215,4 +220,29 @@ exports.unlikeList = (req, res) => {
       console.error(err);
       res.status(500).json({ error: err.code });
     })  
+};
+
+// delete single list 
+exports.deleteList = (req, res) => {
+  const document = db.doc(`/lists/${req.params.listId}`);
+  document.get()
+    .then(doc => {
+      if (!doc.exists) {
+        return res.status(404).json({ error: 'List not found'});
+      }
+      // need to make sure token owner is the owner of this list...
+      if (doc.data().username !== req.user.username){
+        return res.status(403).json({ error: 'Unauthorized bruh'});
+      }
+      else {
+        return document.delete();
+      }
+    })
+    .then(() => {
+      res.json({ message: `List w/ listId ${req.params.listId} deleted successfully`});
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: err.code });
+    })
 }
