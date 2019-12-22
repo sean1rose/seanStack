@@ -1,6 +1,6 @@
 const {admin, db} = require('./admin');
 
-// middleware function
+// middleware function to protect routes (each request to route that uses this middleware will require the auth token)
 exports.fbAuth = (req, res, next) => {
   let idToken;
   // if the headers on the request has an authorization value and that value starts w/ 'Bearer'
@@ -14,7 +14,7 @@ exports.fbAuth = (req, res, next) => {
   // need to verify that we authorized this token...
   admin.auth().verifyIdToken(idToken)
     .then(decodedToken => {
-      // need to add this data to our request object
+      // ***adding user data to req-obj, so each protected route will now have access to that user-object***
       req.user = decodedToken;
       // then get this specific user from the collection so can add his username to our request
         // i guess we need more than just the token on each request...

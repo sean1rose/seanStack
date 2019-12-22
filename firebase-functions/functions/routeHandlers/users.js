@@ -1,6 +1,6 @@
 const { admin, db } = require('../util/admin');
 const firebaseConfig = require('../util/firebaseConfig')
-const {doesAuthRequestPassValidation} = require('../util/validators')
+const {doesAuthRequestPassValidation, cleanUserDetails} = require('../util/validators')
 
 
 // firebase setup (authentication: to create authenticated users)
@@ -9,6 +9,7 @@ const firebase = require('firebase');
 firebase.initializeApp(firebaseConfig);
 
 
+// user sign up route
 exports.signup = (req, res) => {
   // when post signup route is hit -> start with newUser object...
   const newUser = {
@@ -83,6 +84,7 @@ exports.signup = (req, res) => {
 
 }
 
+// log user in
 exports.login = (req, res) => {
   const user = {
     email: req.body.email,
@@ -118,8 +120,49 @@ exports.login = (req, res) => {
 
       })
   
+};
+
+// Add user details
+exports.addUserDetails = (req, res) => {
+  // takes in request obj with:  location, website, bio
+  let userDetails = cleanUserDetails(req.body);
+
+  db.doc(`/users/${req.user.username}`).update(userDetails)
+    .then(() => {
+      return res.status(201).json({ message: 'User details updated successfully'});
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(500).json( { error: err.code });
+    });
+};
+
+// get own authenticated user details
+exports.getAuthenticatedUser = (req, res) => {
+  let userData = {};
+  db.doc(`/users/${req.user.username}`).get()
+    .then((doc) => {
+      if (doc.exists) {
+        // adding the credential data to user obj
+        userData.credentials = doc.data();
+        return db.collection('likes').where('username', '==', req.user.username).get()
+      }
+    })
+    .then(data => {
+      // likes collection .get() call back...
+      userData.likes = [];
+      data.forEach(doc => {
+        userData.likes.push(doc.data());
+      });
+      return res.status(201).json({user: userData});
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(500).json({ error: err.code});
+    })
 }
 
+// upload a profile avatar
 exports.uploadImage = (req, res) => {
   const BusBoy = require('busboy');
   const path = require('path');

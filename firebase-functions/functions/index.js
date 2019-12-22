@@ -1,7 +1,7 @@
 const app = require('express')(); // start up express server
 const functions = require('firebase-functions');
 const { getAllLists, createList } = require('./routeHandlers/lists');
-const { signup, login, uploadImage } = require('./routeHandlers/users');
+const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser } = require('./routeHandlers/users');
 const { fbAuth } = require('./util/fbAuth')
 
 /*
@@ -13,10 +13,12 @@ const { fbAuth } = require('./util/fbAuth')
 // *lists routes (get and post)*
 app.get('/lists', getAllLists);
 app.post('/list', fbAuth, createList);
+
 // *users routes (post signup and post login)*
 app.post('/signup', signup);
 app.post('/login', login)
-
 app.post('/user/image', fbAuth, uploadImage)
+app.post('/user', fbAuth, addUserDetails)
+app.get('/user', fbAuth, getAuthenticatedUser)
 
 exports.api = functions.https.onRequest(app);

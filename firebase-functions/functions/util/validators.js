@@ -35,4 +35,25 @@ exports.doesAuthRequestPassValidation = authRequest => {
   else return {doesPass: true}
 }
 
+
+exports.cleanUserDetails = data => {
+  // take in bio, location, website
+  let userDetails = {};
+
+  if (!isStringEmpty(data.bio)) userDetails.bio = data.bio;
+  if (!isStringEmpty(data.website)) {
+    // add http to website if not included by user
+    if (data.website.trim().substring(0, 4) !== 'http') {
+      // if no http -> add to it
+      userDetails.website = `http://${data.website.trim()}`;
+    }
+    else {
+      userDetails.website = data.website;
+    }
+  }
+  if (!isStringEmpty(data.location)) userDetails.location = data.location;
+
+  return userDetails;
+}
+
 // ***validation helpers END***
