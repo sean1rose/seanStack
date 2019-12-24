@@ -11,6 +11,7 @@ let db = {
   },
   lists: [
     {
+      listId: 'alkjfakl;sjf;la',
       user: 'user',
       list: {
         '1': 'foo',

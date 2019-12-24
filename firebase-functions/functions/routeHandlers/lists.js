@@ -15,7 +15,7 @@ exports.getAllLists = (req, res) => {
         username: listDoc.data().username,
         createdAt: listDoc.data().createdAt,
         list: listDoc.data().list,
-        title: listDoc.data.title
+        title: listDoc.data().title
       });
     })
     return res.status(200).json({lists});
