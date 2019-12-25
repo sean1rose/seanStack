@@ -15,7 +15,10 @@ exports.getAllLists = (req, res) => {
         username: listDoc.data().username,
         createdAt: listDoc.data().createdAt,
         list: listDoc.data().list,
-        title: listDoc.data().title
+        title: listDoc.data().title,
+        likeCount: doc.data().likeCount,
+        commentCount: doc.data().commentCount,
+        userImage: doc.data().userImage
       });
     })
     return res.status(200).json({lists});
@@ -89,7 +92,7 @@ exports.getList = (req, res) => {
 // comment on a list
 exports.commentOnList = (req, res) => {
   // clean/validate comment data
-  if (req.body.body.trim() === '') return res.status(400).json({message: 'No comment text to add'})
+  if (req.body.body.trim() === '') return res.status(400).json({comment: 'No comment text to add - Must not be empty'})
 
   const newComment = {
     username: req.user.username, // req.user is passed by our middleware
