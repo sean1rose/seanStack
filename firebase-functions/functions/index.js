@@ -3,6 +3,9 @@ const functions = require('firebase-functions');
 const { getAllLists, createList , getList, deleteList, commentOnList, likeList, unlikeList} = require('./routeHandlers/lists');
 const { signup, login, uploadImage, addUserDetails, getAuthenticatedUser, getUserDetails, markNotificationsAsRead } = require('./routeHandlers/users');
 const { fbAuth } = require('./util/fbAuth')
+const cors = require('cors');
+app.use(cors())
+
 const { db } = require('./util/admin')
 
 /*

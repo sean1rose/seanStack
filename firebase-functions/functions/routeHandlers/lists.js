@@ -16,9 +16,9 @@ exports.getAllLists = (req, res) => {
         createdAt: listDoc.data().createdAt,
         list: listDoc.data().list,
         title: listDoc.data().title,
-        likeCount: doc.data().likeCount,
-        commentCount: doc.data().commentCount,
-        userImage: doc.data().userImage
+        likeCount: listDoc.data().likeCount,
+        commentCount: listDoc.data().commentCount,
+        userImage: listDoc.data().userImage
       });
     })
     return res.status(200).json({lists});
