@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 import './App.css';
-import { Box, Button, Heading, Grommet } from 'grommet';
+import { Box, Button, Heading, Grommet, ResponsiveContext } from 'grommet';
 
 // Pages
 import home from './pages/home';
@@ -10,11 +10,22 @@ import signup from './pages/signup';
 
 // Components
 import {AppBar} from './components/AppBar';
-import { Notification } from 'grommet-icons';
 
 // theme
 const theme = {
   global: {
+    breakpoints: {
+      xsmall: {
+        value: 500
+      },
+      small: {
+        value: 900
+      },
+      medium: undefined,
+      middle: {
+        value: 3000
+      }
+    },  
     colors: {
       brand: '#228BE6',
     },
@@ -29,21 +40,26 @@ const theme = {
 function App() {
   return (
     <Grommet theme={theme}>
-      <Router>
-        <AppBar>
-          {/* <Heading level='3' margin='none'>Couple O Goats</Heading> */}
-          <Button as={Link} to='/'  onClick={() => {}} label='Home' />
-          <Button as={Link} to='/login'  onClick={() => {}} label='Login' />
-          <Button as={Link} to='/signup'  onClick={() => {}} label='Signup' />
-        </AppBar>
-        <div className='container'>
-          <Switch>
-            <Route exact path='/' component={home}/>
-            <Route exact path='/login' component={login}/>
-            <Route exact path='/signup' component={signup}/>
-          </Switch>
-        </div>
-      </Router>
+      <ResponsiveContext.Consumer>
+        {size => (
+          <Router>
+            <AppBar>
+              {/* <Heading level='3' margin='none'>Couple O Goats</Heading> */}
+              <Button as={Link} to='/'  onClick={() => {}} label='Home' />
+              <Button as={Link} to='/signup'  onClick={() => {}} label='Signup' />
+              <Button as={Link} to='/login'  onClick={() => {}} label='Login' />
+            </AppBar>
+            <div className='container'>
+              <Switch>
+                <Route exact path='/' component={home}/>
+                <Route exact path='/signup' component={signup}/>
+                <Route exact path='/login' component={login}/>
+              </Switch>
+            </div>
+          </Router>
+
+        )}
+      </ResponsiveContext.Consumer>
     </Grommet>
   );
 }

@@ -6,14 +6,12 @@ export const AppBar = props => {
     <Box
       tag='header'
       direction='row'
-      // align='center'
-      // justify='between'
+      gap='small'
       background='brand'
-      pad={{ left: 'medium', right: 'mediunm', vertial: 'medium' }}
+      pad='small'
       elevation='medium'
       style={{ zIndex: '1' }}
       {...props}
-    
     />
   )
 }
