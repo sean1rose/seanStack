@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-// axios.defaults.proxy.host = "https://us-central1-seanstack-daf2a.cloudfunctions.net/api";
+import List from '../components/List';
+import ListItem from '../components/ListItem';
+import Scream from '../components/Scream'
+import {Box, Heading} from 'grommet'
 
 export class home extends Component {
   state = {
@@ -21,7 +24,20 @@ export class home extends Component {
   }
 
   render() {
-  let recentListsMarkup = this.state.lists ? (this.state.lists.map(list => <p key={list.listId}>{list.list['1']}</p>)) : <p>Loading...</p>
+  let recentListsMarkup = this.state.lists 
+    ? (this.state.lists.map((list, index) => {
+      return (
+        <Box pad={{horizontal: "medium", top: "large", bottom: "xsmall"}} key={index} >
+          <Box border={{color: "brand", size: "large"}} elevation="medium"  >
+            <Scream 
+              scream={list}
+            />
+          </Box>
+        </Box>
+      )
+    })) 
+    : <p>Loading...</p>
+
     return (
       <div style={{display: 'grid', gridTemplateColumns: '3fr 1fr', gridGap: '12px'}}>
         <div>
