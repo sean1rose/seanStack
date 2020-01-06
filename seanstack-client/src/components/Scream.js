@@ -34,7 +34,7 @@ class Scream extends Component {
                 )
               })
             }
-          </List>          
+          </List>
         </Box>
       </Box>
     )

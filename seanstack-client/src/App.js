@@ -35,6 +35,16 @@ const theme = {
       height: '20px',
     },
   },
+  formField: {
+    label: {
+      // color: "dark-3",
+      size: "small",
+      margin: { vertical: "10px", bottom: "10px", horizontal: "0" },
+      // weight: 600
+    },
+    border: false,
+    margin: 0
+  }
 };
 
 function App() {
