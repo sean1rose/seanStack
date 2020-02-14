@@ -26,6 +26,7 @@ class login extends Component {
     axios.post('/login', loginUserData)
       .then(res => {
         console.log(res.data);
+        localStorage.setItem('FBIdToken', `Bearer ${res.data.token}`);
         this.setState({
           loading: false
         });
