@@ -3,7 +3,10 @@ import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 import './App.css';
 import { Box, Button, Heading, Grommet, ResponsiveContext } from 'grommet';
 import themeFile from './utils/theme';
-import jwtDecode from 'jwt-decode'
+import jwtDecode from 'jwt-decode';
+// Redux
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
 import AuthRoute from './utils/AuthRoute';
 
@@ -30,28 +33,30 @@ if (token) {
 
 function App() {
   return (
-    <Grommet theme={themeFile}>
-      <ResponsiveContext.Consumer>
-        {size => (
-          <Router>
-            <AppBar>
-              {/* <Heading level='3' margin='none'>Couple O Goats</Heading> */}
-              <Button as={Link} to='/'  onClick={() => {}} label='Home' />
-              <Button as={Link} to='/signup'  onClick={() => {}} label='Signup' />
-              <Button as={Link} to='/login'  onClick={() => {}} label='Login' />
-            </AppBar>
-            <div className='container'>
-              <Switch>
-                <Route exact path='/' component={home}/>
-                <AuthRoute exact path='/signup' component={signup} authenticated={authenticated}/>
-                <AuthRoute exact path='/login' component={login} authenticated={authenticated}/>
-              </Switch>
-            </div>
-          </Router>
+    <Provider store={store}>
+      <Grommet theme={themeFile}>
+        <ResponsiveContext.Consumer>
+          {size => (
+            <Router>
+              <AppBar>
+                {/* <Heading level='3' margin='none'>Couple O Goats</Heading> */}
+                <Button as={Link} to='/'  onClick={() => {}} label='Home' />
+                <Button as={Link} to='/signup'  onClick={() => {}} label='Signup' />
+                <Button as={Link} to='/login'  onClick={() => {}} label='Login' />
+              </AppBar>
+              <div className='container'>
+                <Switch>
+                  <Route exact path='/' component={home}/>
+                  <AuthRoute exact path='/signup' component={signup} authenticated={authenticated}/>
+                  <AuthRoute exact path='/login' component={login} authenticated={authenticated}/>
+                </Switch>
+              </div>
+            </Router>
 
-        )}
-      </ResponsiveContext.Consumer>
-    </Grommet>
+          )}
+        </ResponsiveContext.Consumer>
+      </Grommet>
+    </Provider>
   );
 }
 

@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import {Form, FormField, Button, Text, Meter} from 'grommet';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+// redux...
+import { connect } from 'react-redux';
+import { loginUser } from '../redux/actions/userActions';
 
 class login extends Component {
   constructor() {
@@ -13,6 +16,13 @@ class login extends Component {
       errors: {}
     }
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.ui.errors) {
+      this.setState({ errors: nextProps.ui.errors });
+    }
+  }
+
   handleSubmit = (event) => {
     event.preventDefault();
     this.setState({
@@ -23,21 +33,8 @@ class login extends Component {
       email: this.state.email,
       password: this.state.password
     }
-    axios.post('/login', loginUserData)
-      .then(res => {
-        console.log(res.data);
-        localStorage.setItem('FBIdToken', `Bearer ${res.data.token}`);
-        this.setState({
-          loading: false
-        });
-        this.props.history.push('/');
-      })
-      .catch(err => {
-        this.setState({
-          errors: err.response.data,
-          loading: false
-        })
-      })
+    this.props.loginUser(loginUserData, this.props.history);
+    // moved API call to userAction
     console.log('hi', event.target.value);
   }
 
@@ -48,7 +45,8 @@ class login extends Component {
   }
 
   render() {
-    const { errors, loading } = this.state;
+    const { errors } = this.state;
+    const { ui: {loading} } = this.props;
     return (
       <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center'}}>
         <div></div>
@@ -81,4 +79,13 @@ class login extends Component {
   }
 }
 
-export default login
+const mapStateToProps = (state) => ({
+  user: state.user,
+  ui: state.ui
+});
+
+const mapActionToProps = {
+  loginUser
+}
+
+export default connect(mapStateToProps, mapActionToProps)(login)
