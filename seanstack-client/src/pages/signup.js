@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import {Form, FormField, Button, Text, Meter} from 'grommet';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+
+import { connect } from 'react-redux';
+import { signupUser } from '../redux/actions/userActions';
 
 class signup extends Component {
   constructor() {
@@ -9,11 +11,17 @@ class signup extends Component {
     this.state = {
       email: '',
       password: '',
-      loading: false,
       username: '',
       errors: {}
     }
   }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.ui.errors) {
+      this.setState({ errors: nextProps.ui.errors });
+    }
+  }  
+
   handleSubmit = (event) => {
     event.preventDefault();
     this.setState({
@@ -26,22 +34,7 @@ class signup extends Component {
       confirmPassword: this.state.confirmPassword,
       username: this.state.username
     }
-    axios.post('/signup', newUserData)
-      .then(res => {
-        console.log(res.data);
-        localStorage.setItem('FBIdToken', `Bearer ${res.data.token}`);
-        this.setState({
-          loading: false
-        });
-        this.props.history.push('/');
-      })
-      .catch(err => {
-        this.setState({
-          errors: err.response.data,
-          loading: false
-        })
-      })
-    console.log('hi', event.target.value);
+    this.props.signupUser(newUserData, this.props.history);
   }
 
   handleChange = (event) => {
@@ -51,7 +44,8 @@ class signup extends Component {
   }
 
   render() {
-    const { errors, loading } = this.state;
+    const { ui: { loading }} = this.props;
+    const { errors } = this.state;
     return (
       <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center'}}>
         <div></div>
@@ -86,4 +80,9 @@ class signup extends Component {
   }
 }
 
-export default signup
+const mapStateToProps = (state) => ({
+  user: state.user,
+  ui: state.ui
+})
+
+export default connect(mapStateToProps, { signupUser })(signup)

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {Form, FormField, Button, Text, Meter} from 'grommet';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 // redux...
 import { connect } from 'react-redux';
