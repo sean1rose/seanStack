@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import List from '../components/List';
 import ListItem from '../components/ListItem';
-import Scream from '../components/Scream'
-import {Box, Heading} from 'grommet'
+import Scream from '../components/Scream';
+import {Box, Heading} from 'grommet';
+import Profile from '../components/Profile';
 
 export class home extends Component {
   state = {
@@ -43,7 +44,7 @@ export class home extends Component {
         <div>
           {recentListsMarkup}
         </div>
-        <div>Profile...</div>
+        <Profile />
       </div>
     )
   }
