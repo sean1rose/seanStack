@@ -64,3 +64,13 @@ const setAuthorizationHeader = (token) => {
   axios.defaults.headers.common['Authorization'] = fbIdToken;
 
 }
+
+export const editUserDetails = (userDetails) => (dispatch) => {
+  console.log('editUserDetails - ', userDetails);
+  dispatch({ type: LOADING_USER});
+  axios.post('/user', userDetails)
+    .then(() => {
+      dispatch(getUserData());
+    })
+    .catch(err => console.log(err));
+}

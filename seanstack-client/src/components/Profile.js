@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Stack, Box, Button, Text } from 'grommet'
 import { Link } from 'react-router-dom'
-import { Edit } from 'grommet-icons'
+import { Edit, Logout } from 'grommet-icons'
 import { logoutUser, uploadImage } from '../redux/actions/userActions'
+import EditDetails from './EditDetails'
 
 class Profile extends Component {
   handleImageChange = (event) => {
@@ -16,7 +17,10 @@ class Profile extends Component {
   }
   handleEditPicture = () => {
     const fileInput = document.getElementById('imageInput');
-    fileInput.click();
+    fileInput.click()
+  }
+  handleLogout = () => {
+    this.props.logoutUser()
   }
   render() {
     const { 
@@ -44,21 +48,35 @@ class Profile extends Component {
           <div className='profile-details'>
             <Button as={Link} to={`/users/${username}`}  label={`@${username}`} />
           </div>
-          {/* <hr/>
-          {bio && <Text>{bio}</Text>} */}
+          <hr/>
+          {bio && <Text>{bio}</Text>}
           <hr/>
           {email && <Text>{email}</Text>}
-          {/* {website && <div><a href={website} target="_blank" rel="noopener noreferrer" >{website}</a></div>} */}
+          <hr/>
+          {website && <div><a href={website} target="_blank" rel="noopener noreferrer" >{website}</a></div>}
+          <hr/>
+          {location && <Text>{location}</Text>}
           <hr/>
           <div>Joined {createdAt}</div>
+          <div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <div><EditDetails /><span>Edit Details</span></div>
+            <div onClick={this.handleLogout}>
+              <Button icon={<Logout />} /><span>Logout</span>
+            </div>
+
+          </div>
         </div>
           
       </Stack>
     ) : (
-      <Stack>
-        <Text>No profile found, please login again</Text>
-        <div><Button as={Link} to={`/login`}  label={`Login`} /></div>
-        <div><Button as={Link} to={`/signup`}  label={`Signup`} /></div>
+      <Stack >
+        <div style={{display: 'flex', flexDirection: 'column'}}>
+          <Text>No profile found, please login again</Text>
+          <div style={{display: 'flex'}}>
+            <div><Button as={Link} to={`/login`}  label={`Login`} /></div>
+            <div><Button as={Link} to={`/signup`}  label={`Signup`} /></div>
+          </div>
+        </div>
       </Stack>
     )) : (<p>Loading...</p>)
 
