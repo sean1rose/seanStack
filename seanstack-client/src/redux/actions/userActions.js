@@ -28,6 +28,15 @@ export const getUserData = () => (dispatch) => {
     .catch(err => console.log('err', err))
 }
 
+export const uploadImage = (formData) => (dispatch) => {
+  dispatch({ type: LOADING_USER });
+  axios.post('/user/image', formData)
+    .then(res => {
+      dispatch(getUserData());
+    })
+    .catch(err => console.log(err));
+}
+
 export const signupUser = (newUserData, history) => (dispatch) => {
   dispatch({ type: LOADING_UI}); 
   axios.post('/signup', newUserData)
