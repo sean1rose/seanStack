@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { Edit, Logout } from 'grommet-icons'
 import { logoutUser, uploadImage } from '../redux/actions/userActions'
 import EditDetails from './EditDetails'
+import MyButton from '../utils/MyButton'
 
 class Profile extends Component {
   handleImageChange = (event) => {
@@ -39,7 +40,7 @@ class Profile extends Component {
             <img style={{width: '200px', height: '200px', borderRadius: '50%'}} src={imageUrl}/>
             <input type='file' id='imageInput' hidden='hidden' onChange={this.handleImageChange}/>
             <div style={{position: 'relative'}}>
-              <Button style={{position: 'absolute', bottom: '0'}} plain icon={<Edit />} onClick={this.handleEditPicture} className='button' />
+              <MyButton style={{position: 'absolute', bottom: '0'}} icon={<Edit/>} onClick={this.handleEditPicture} />
             </div>
           </div>
           <hr/>
@@ -61,7 +62,8 @@ class Profile extends Component {
           <div style={{display: 'flex', justifyContent: 'space-between'}}>
             <div><EditDetails /><span>Edit Details</span></div>
             <div onClick={this.handleLogout}>
-              <Button icon={<Logout />} /><span>Logout</span>
+              <MyButton icon={<Logout />} />
+              <span>Logout</span>
             </div>
 
           </div>

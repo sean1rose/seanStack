@@ -19,8 +19,8 @@ import login from './pages/login';
 import signup from './pages/signup';
 
 // Components
-import {AppBar} from './components/AppBar';
-import Axios from 'axios';
+// import {AppBar} from './components/AppBar';
+import Navbar from './components/Navbar';
 
 const token = localStorage.FBIdToken;
 if (token) {
@@ -44,12 +44,7 @@ function App() {
         <ResponsiveContext.Consumer>
           {size => (
             <Router>
-              <AppBar>
-                {/* <Heading level='3' margin='none'>Couple O Goats</Heading> */}
-                <Button as={Link} to='/'  onClick={() => {}} label='Home' />
-                <Button as={Link} to='/signup'  onClick={() => {}} label='Signup' />
-                <Button as={Link} to='/login'  onClick={() => {}} label='Login' />
-              </AppBar>
+              <Navbar />
               <div className='container'>
                 <Switch>
                   <Route exact path='/' component={home}/>

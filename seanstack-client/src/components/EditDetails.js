@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { editUserDetails } from '../redux/actions/userActions'
 import { Button, Layer, Box, FormField, TextArea, TextInput, Select, Heading } from 'grommet'
 import { Close, Add, Edit,  } from 'grommet-icons'
+import MyButton from '../utils/MyButton'
 
 class EditDetails extends Component {
   state = {
@@ -50,7 +51,7 @@ class EditDetails extends Component {
   render() {
     return (
       <Fragment>
-        <Button  onClick={this.handleOpen} icon={<Edit />} />
+        <MyButton onClick={this.handleOpen} icon={<Edit />} />
         {this.state.open && (
           <Layer
             position="center"
@@ -83,7 +84,7 @@ class EditDetails extends Component {
                 </FormField>
               </Box>
               <div style={{display: 'flex'}} >
-                <Button label="Cancel" onClick={this.handleClose}/>
+                <MyButton onClick={this.handleClose} label="Cancel" />
                 <Button
                   type="submit"
                   label="Submit"
